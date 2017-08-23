@@ -105,6 +105,8 @@ assign [class="(?i)thunderbird"] "2: chat"
 assign [class="(?i)pidgin"] "2: chat"
 assign [class="(?i)xchat"] "2: chat"
 assign [class="(?i)keepassx"] "3: pass"
+assign [class="(?i)qtpass"] "3: pass"
+assign [class="(?i)vpnui"] "3: pass"
 assign [class="(?i)gimp"] "6: graphics"
 assign [class="(?i)inkscape"] "6: graphics"
 
