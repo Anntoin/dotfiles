@@ -26,6 +26,10 @@ bindsym $mod+d exec dmenu_run
 
 for_window [class="^.*"] border pixel 0
 
+# snips
+bindsym $mod+Shift+s exec snip ls
+bindsym $mod+Shift+a exec snip add
+
 # change focus
 bindsym $mod+h focus left
 bindsym $mod+j focus down
