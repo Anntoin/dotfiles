@@ -22,3 +22,8 @@ Host Firepoker
 Host host.does.not.exist
     ConnectTimeout=1
 
+# Github
+Host github.com
+	HostName github.com
+	User git
+	IdentityFile ~/.ssh/github_rsa
