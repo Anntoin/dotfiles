@@ -1,0 +1,24 @@
+# AWS Internal account
+Host fedorawebserver.aws
+    Hostname ec2-54-72-52-134.eu-west-1.compute.amazonaws.com
+    User fedora
+    IdentityFile "~/.ssh/AWSInternal.pem"
+
+Host *.compute.amazonaws.com
+    User ec2-user
+    IdentityFile "~/.ssh/AWSInternal.pem"
+
+# Personal Hosts (home servers)
+Host fortuna
+    User anntoin
+    PreferredAuthentications password
+
+Host Firepoker
+    User ubuntu
+    Hostname ec2-52-214-17-91.eu-west-1.compute.amazonaws.com
+    IdentityFile "~/.ssh/Firepoker.pem"
+
+# Tramp
+Host host.does.not.exist
+    ConnectTimeout=1
+

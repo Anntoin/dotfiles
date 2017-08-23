@@ -1,0 +1,21 @@
+# TODO: Need better way than the following for dealing with hosts from round-robin DNS.
+#    StrictHostKeyChecking no
+#    UserKnownHostsFile '/dev/null'
+#
+#    CheckHostIP useful?
+#
+# TODO: Check if `Compression yes` will speed things up.
+# TODO: it's ignoring the UserKnownHostsFile directive?
+# TODO: Master connections for less password input?
+#
+
+# All hosts
+Host *
+    StrictHostKeyChecking no	
+    ServerAliveInterval 60
+    GSSAPITrustDns yes
+    TCPKeepAlive yes
+    ControlMaster auto
+    ControlPath /tmp/ssh_%h
+    ControlPersist = no
+
