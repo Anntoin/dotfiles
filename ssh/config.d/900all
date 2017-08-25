@@ -17,5 +17,4 @@ Host *
     TCPKeepAlive yes
     ControlMaster auto
     ControlPath /tmp/ssh_%h
-    ControlPersist = no
-
+    ControlPersist = 600
