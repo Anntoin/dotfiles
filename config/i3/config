@@ -25,6 +25,8 @@ bindsym $mod+d exec dmenu_run
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 
 for_window [class="^.*"] border pixel 0
+gaps inner 4
+gaps outer 0
 
 # snips
 bindsym $mod+Shift+s exec snip ls
