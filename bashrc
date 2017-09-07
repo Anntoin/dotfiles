@@ -70,7 +70,7 @@ function git-grope()
 }
 
 # tmux always use 256 colours
-alias tmux='tmux -2'
+alias tmux='ssh_auth_save; export HOSTNAME=$(hostname); tmux -2'
 
 # taskwarrior testing
 alias task-test='task rc:~/.taskrc_test'
@@ -139,6 +139,12 @@ function project
     else
         task "$@"
     fi
+}
+
+# TMUX
+ssh_auth_save() {
+    rm "$HOME/.ssh/ssh-auth-sock.$HOSTNAME"
+    ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh-auth-sock.$HOSTNAME"
 }
 
 #---------------------------------------------------
