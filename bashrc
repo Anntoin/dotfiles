@@ -1,3 +1,9 @@
+#---------------------------------------------------
+# Work specific configs
+#---------------------------------------------------
+
+source ~/.bashrc.work
+
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
@@ -160,10 +166,3 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH="$PATH:/home/local/ANT/anntoinw/bin/anaconda3/bin"
 
 export PATH="$PATH:$HOME/.local/bin/"
-
-
-#---------------------------------------------------
-# Work specific configs
-#---------------------------------------------------
-
-source ~/.bashrc.work
