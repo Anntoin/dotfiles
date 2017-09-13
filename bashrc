@@ -147,6 +147,24 @@ ssh_auth_save() {
     ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh-auth-sock.$HOSTNAME"
 }
 
+forward_port()
+(
+    help()
+    {
+        echo >&2 "usage: $0 host port"
+        exit 1
+    }
+
+    if [ $1 ] && [ $2 ]; then
+        HOST=$1
+        PORT=$2
+    else
+        help
+    fi
+
+  	ssh -fNL $PORT:localhost:$PORT $HOST
+)
+
 #---------------------------------------------------
 # Prompt
 #---------------------------------------------------
