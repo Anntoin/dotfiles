@@ -1,113 +1,3 @@
-#---------------------------------------------------
-# Work specific configs
-#---------------------------------------------------
-
-source ~/.bashrc.work
-
-# If not running interactively, don't do anything
-[ -z "$PS1" ] && return
-
-# don't put duplicate lines or lines starting with space in the history.
-# See bash(1) for more options
-HISTCONTROL=ignoreboth
-
-# append to the history file, don't overwrite it
-shopt -s histappend
-
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=9999
-HISTFILESIZE=9999
-
-# vi style keybindings
-set -o vi
-
-# Enable autocompletion when using sudo
-complete -cf sudo
-
-# correct minor spelling errors in cd commands
-shopt -s cdspell
-
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
-shopt -s checkwinsize
-
-# Editor variable
-export EDITOR=vim
-
-# Make java apps less ugly
-# 27 Jun 2013: Davmail crashes with these options
-#export _JAVA_OPTIONS="-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel -Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel"
-
-# Shouldn't really be nessecary but...
-[[ -f ~/.Xresources ]] && xrdb ~/.Xresources
-
-# make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
-if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-    . /etc/bash_completion
-fi
-
-source <(awless completion bash)
-
-#----------------------------------------------------------------------#
-# Aliases
-#----------------------------------------------------------------------#
-
-# scratchpad function, note quote madness
-function scratch
-{
-    xterm -title scratchpad -e 'vim -n -c "let g:auto_save = 1" + ~/Documents/Logs/scratchpad-$(date +'%d-%b-%Y').md' &
-}
-
-# git
-function git-grope()
-{
-    git grep $@ $(git rev-list --all)
-}
-
-# tmux always use 256 colours
-alias tmux='ssh_auth_save; export HOSTNAME=$(hostname); tmux -2'
-
-# taskwarrior testing
-alias task-test='task rc:~/.taskrc_test'
-
-# SSH configs
-alias ssh="cat ~/.ssh/config.d/* > ~/.ssh/config ; ssh"
-
-# # wget always resumes
-alias wget='wget -c'
-
-# code formatting
-alias style='astyle --style=allman'
-
-# Damn I hate emacs keybindings
-alias info='info --vi-keys'
-
-# enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
-
-# some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
 #----------------------------------------------------------------------#
 # Functions
 #----------------------------------------------------------------------#
@@ -164,6 +54,125 @@ forward_port()
 
   	ssh -fNL $PORT:localhost:$PORT $HOST
 )
+export -f forward_port
+
+
+#----------------------------------------------------------------------#
+# Aliases
+#----------------------------------------------------------------------#
+
+# scratchpad function, note quote madness
+function scratch
+{
+    xterm -title scratchpad -e 'vim -n -c "let g:auto_save = 1" + ~/Documents/Logs/scratchpad-$(date +'%d-%b-%Y').md' &
+}
+
+# git
+function git-grope()
+{
+    git grep $@ $(git rev-list --all)
+}
+
+# tmux always use 256 colours
+alias tmux='ssh_auth_save; export HOSTNAME=$(hostname); tmux -2'
+
+# taskwarrior testing
+alias task-test='task rc:~/.taskrc_test'
+
+# SSH configs
+alias ssh="cat ~/.ssh/config.d/* > ~/.ssh/config ; ssh"
+
+# # wget always resumes
+alias wget='wget -c'
+
+# code formatting
+alias style='astyle --style=allman'
+
+# Damn I hate emacs keybindings
+alias info='info --vi-keys'
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+
+#---------------------------------------------------
+# Work specific configs
+#---------------------------------------------------
+
+source ~/.bashrc.work
+
+
+#---------------------------------------------------
+# Interactive mode
+#---------------------------------------------------
+
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=9999
+HISTFILESIZE=9999
+
+# vi style keybindings
+set -o vi
+
+# Enable autocompletion when using sudo
+complete -cf sudo
+
+# correct minor spelling errors in cd commands
+shopt -s cdspell
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# Editor variable
+export EDITOR=vim
+
+# Make java apps less ugly
+# 27 Jun 2013: Davmail crashes with these options
+#export _JAVA_OPTIONS="-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel -Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel"
+
+# Shouldn't really be nessecary but...
+[[ -f ~/.Xresources ]] && xrdb ~/.Xresources
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+    . /etc/bash_completion
+fi
+
+source <(awless completion bash)
+
 
 #---------------------------------------------------
 # Prompt
