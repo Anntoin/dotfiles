@@ -112,6 +112,9 @@ assign [class="(?i)vpnui"] "3: pass"
 assign [class="(?i)gimp"] "6: graphics"
 assign [class="(?i)inkscape"] "6: graphics"
 
+no_focus [class="(?i)vpnui"]
+no_focus [window_role="pop-up"]
+
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
