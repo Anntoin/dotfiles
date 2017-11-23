@@ -152,7 +152,7 @@ shopt -s cdspell
 shopt -s checkwinsize
 
 # Editor variable
-export EDITOR=vim
+export EDITOR="emacsclient -c -s editor"
 
 # Make java apps less ugly
 # 27 Jun 2013: Davmail crashes with these options
