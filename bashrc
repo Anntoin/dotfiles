@@ -176,17 +176,3 @@ GIT_PS1_SHOWCOLORHINTS=true
 PROMPT_COMMAND='__git_ps1 "$NONE[$BLUE\t$NONE] [$PURPLE\W$NONE] " "[$GREEN\$$NONE]➱ $NONE" "[%s$NONE] "'
 PS1="$NONE[$BLUE\t$NONE] [$PURPLE\W$NONE] [$GREEN\$$NONE]➱ $NONE"
 
-#---------------------------------------------------
-# Path
-#---------------------------------------------------
-
-export PATH="$HOME/.pyenv/bin:$PATH"
-# eval "$(pyenv init -)"
-
-export PATH="$HOME/.rbenv/bin:$PATH"
-# eval "$(rbenv init -)"
-
-# added by Anaconda3 4.0.0 installer
-export PATH="$PATH:/home/local/ANT/anntoinw/bin/anaconda3/bin"
-
-export PATH="$PATH:$HOME/.local/bin/"

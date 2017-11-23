@@ -10,14 +10,9 @@
 
 export LANG="en_GB.utf-8"
 
-# if running bash
-if [ -n "$BASH_VERSION" ]; then
-    # include .bashrc if it exists
-    if [ -f "$HOME/.bashrc" ]; then
-	. "$HOME/.bashrc"
-    fi
-fi
-
+#---------------------------------------------------
+# Path
+#---------------------------------------------------
 # set PATH so it includes user's private bin if it exists
 if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
@@ -30,3 +25,34 @@ fi
 
 # PATH includes /sbin and the like
 PATH=$PATH:"/usr/local/sbin:/usr/sbin:/sbin"
+
+# Pyenv
+export PATH="$HOME/.pyenv/bin:$PATH"
+# eval "$(pyenv init -)"
+
+# Ruby
+export PATH="$HOME/.rbenv/bin:$PATH"
+# eval "$(rbenv init -)"
+
+# added by Anaconda3 4.0.0 installer
+export PATH="$PATH:/home/local/ANT/anntoinw/bin/anaconda3/bin"
+
+export PATH="$PATH:$HOME/.local/bin/"
+
+# NVM
+export NVM_DIR="/home/local/ANT/anntoinw/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+export PATH=$PATH:$(npm config --global get prefix)/bin
+
+#---------------------------------------------------
+#
+#---------------------------------------------------
+
+# if running bash
+if [ -n "$BASH_VERSION" ]; then
+    # include .bashrc if it exists
+    if [ -f "$HOME/.bashrc" ]; then
+	. "$HOME/.bashrc"
+    fi
+fi
+
