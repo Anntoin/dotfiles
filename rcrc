@@ -1,1 +1,2 @@
 DOTFILES_DIRS="$HOME/Resources/dotfiles-personal $HOME/Resources/dotfiles-work"
+UNDOTTED="bin/*"
