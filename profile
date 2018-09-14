@@ -13,36 +13,50 @@ export LANG="en_GB.utf-8"
 #---------------------------------------------------
 # Path
 #---------------------------------------------------
+
 # set PATH so it includes user's private bin if it exists
 if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
+
+# ~/.local/bin
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin/:$PATH"
+fi
+
+# PATH includes /sbin and the like
+# PATH="$PATH:/usr/local/sbin:/usr/sbin:/sbin"
 
 # SSHfs Exec
 if [ -d "$HOME/bin/sshfsexec" ] ; then
     PATH="$HOME/bin/sshfsexec:$PATH"
 fi
 
-# PATH includes /sbin and the like
-PATH=$PATH:"/usr/local/sbin:/usr/sbin:/sbin"
+# Python - pyenv
+if [ -d "$HOME/.pyenv/bin" ] ; then
+    PATH="$HOME/.pyenv/bin:$PATH"
+    eval "$(pyenv init -)"
+fi
 
-# Pyenv
-export PATH="$HOME/.pyenv/bin:$PATH"
-# eval "$(pyenv init -)"
-
-# Ruby
-export PATH="$HOME/.rbenv/bin:$PATH"
-# eval "$(rbenv init -)"
-
+# Python - anaconda
 # added by Anaconda3 4.0.0 installer
-export PATH="$PATH:/home/local/ANT/anntoinw/bin/anaconda3/bin"
+PATH="$PATH:/home/local/ANT/anntoinw/bin/anaconda3/bin"
 
-export PATH="$PATH:$HOME/.local/bin/"
+# Ruby - rbenv
+if [ -d "$HOME/.rbenv/bin" ] ; then
+    PATH="$HOME/.rbenv/bin:$PATH"
+    eval "$(rbenv init -)"
+fi
 
-# NVM
-export NVM_DIR="/home/local/ANT/anntoinw/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-export PATH=$PATH:$(npm config --global get prefix)/bin
+# Javascript - nvm
+NVM_DIR="/home/local/ANT/anntoinw/.nvm"
+if [ -d "$NVM_DIR" ] ; then
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    PATH=$PATH:$(npm config --global get prefix)/bin
+fi
+
+# Export PATH once
+export PATH
 
 #---------------------------------------------------
 #
@@ -55,4 +69,3 @@ if [ -n "$BASH_VERSION" ]; then
 	. "$HOME/.bashrc"
     fi
 fi
-
