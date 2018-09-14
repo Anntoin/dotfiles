@@ -1,0 +1,3 @@
+$XONSH_SHOW_TRACEBACK = True
+$SHELL_TYPE = 'prompt_toolkit'
+$VI_MODE = True
