@@ -761,6 +761,9 @@ you should place your code here."
   ;; Org
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  ;; Auto-revert all org mode files
+  ((org-mode . ((eval . (auto-revert-mode 1)))))
+
   (setq org-agenda-files (list "~/Org/work.org"
                                "~/Org/todo.org"
                                "~/Org/notes.org")
