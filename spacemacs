@@ -112,6 +112,7 @@ This function should only modify configuration layer settings."
      tabbar-ruler
      ;; minimal-fringes
      coffee-mode
+     org-bullets
      )
 
    ;; A list of packages and/or extensions that will not be install and loaded.
@@ -827,6 +828,17 @@ you should place your code here."
         org-gcal-client-secret "gk98O6fxvpi6xsbA1VdQ6c2R"
         org-gcal-file-alist '(("anntoin@gmail.com" .  "~/Org/calendar.org")))
   )
+
+  (setq org-startup-indented t
+        org-bullets-bullet-list '(" ") ;; no bullets, needs org-bullets package
+        org-ellipsis "  " ;; folding symbol
+        org-pretty-entities t
+        org-hide-emphasis-markers t
+        ;; show actually italicized text instead of /italicized text/
+        org-agenda-block-separator ""
+        org-fontify-whole-heading-line t
+        org-fontify-done-headline t
+        org-fontify-quote-and-verse-blocks t)
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
