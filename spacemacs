@@ -48,7 +48,8 @@ This function should only modify configuration layer settings."
      ;; Navigation
      helm
      neotree
-
+     (ranger :variables
+             ranger-show-preview t)
      ;; Language stuff
      (python :variables python-fill-column 79)
      traad
