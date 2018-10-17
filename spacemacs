@@ -33,7 +33,7 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(haskell
+   '(
      ;; Essentials
      spell-checking
      syntax-checking
@@ -64,6 +64,7 @@ This function should only modify configuration layer settings."
      emacs-lisp
      chrome
      perl5
+     haskell
 
      ;; Misc
      (shell :variables
