@@ -242,10 +242,15 @@ It should only modify the values of Spacemacs settings."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(sanityinc-tomorrow-eighties
                          sanityinc-tomorrow-day
-                         material
-                         material-light
-                         spacemacs
-                         spacemacs-light
+                         apostate
+                         apostate-dark
+                         apostate-light
+                         oldlace
+                         planet
+                         smyx
+                         spacegray
+                         stekene-dark
+                         tango
                          )
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
