@@ -14,18 +14,18 @@ export LANG="en_GB.utf-8"
 # Path
 #---------------------------------------------------
 
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
-fi
+# Reset PATH to sane defaults (include /sbin and the like)
+PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin"
 
 # ~/.local/bin
 if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin/:$PATH"
 fi
 
-# PATH includes /sbin and the like
-# PATH="$PATH:/usr/local/sbin:/usr/sbin:/sbin"
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
 
 # SSHfs Exec
 if [ -d "$HOME/bin/sshfsexec" ] ; then
@@ -38,17 +38,13 @@ if [ -d "$HOME/.pyenv/bin" ] ; then
     eval "$(pyenv init -)"
 fi
 
-# Python - anaconda
-# added by Anaconda3 4.0.0 installer
-PATH="$PATH:/home/local/ANT/anntoinw/bin/anaconda3/bin"
-
 # Ruby - rbenv
 if [ -d "$HOME/.rbenv/bin" ] ; then
     PATH="$HOME/.rbenv/bin:$PATH"
     eval "$(rbenv init -)"
 fi
 
-# Javascript - nvm
+# Javascript - nvm (considering switching to nodenv)
 NVM_DIR="/home/local/ANT/anntoinw/.nvm"
 if [ -d "$NVM_DIR" ] ; then
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
