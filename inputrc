@@ -1,11 +1,17 @@
-#Vim style autocompletion
-TAB: menu-complete
-"\e[Z": menu-complete-backward
-#Vi bindings for readline programs
+# Vi bindings for readline programs
 set editing-mode vi
 set keymap vi
-#Ignore case for autocompletion
+
+# Vim style autocompletion
+TAB: menu-complete
+"\e[Z": menu-complete-backward
+
+# Ignore case for autocompletion
 set completion-ignore-case On
-#Enable smart history search
+
+# Enable smart history search
 "\e[A":history-search-backward
 "\e[B":history-search-forward
+
+# Colours!
+set colored-stats On
