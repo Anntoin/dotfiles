@@ -8,6 +8,10 @@ Host *.compute.amazonaws.com
     User ec2-user
     IdentityFile "~/.ssh/AWSInternal.pem"
 
+Host git-codecommit.eu-west-1.amazonaws.com
+    User APKAJOS5OW5TEJKNU5XA
+    IdentityFile "~/.ssh/pass.pem"
+
 # Personal Hosts (home servers)
 Host fortuna
     User anntoin
@@ -22,8 +26,14 @@ Host Firepoker
 Host host.does.not.exist
     ConnectTimeout=1
 
+# Grandmaster
+Host grandmaster
+    User anntoin
+    Hostname 192.168.36.13
+    PreferredAuthentications password
+
 # Github
 Host github.com
-	HostName github.com
-	User git
-	IdentityFile ~/.ssh/github_rsa
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/github_rsa
