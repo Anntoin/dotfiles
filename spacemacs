@@ -1364,6 +1364,22 @@ you should place your code here."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+  ;; Handy functions
+  (defun merge-lines-with-prefix ()
+    "Merge the next line into the current line keeping a common prefix"
+    (interactive)
+    (save-excursion
+      (let (current-line next-line prefix)
+        (setq current-line
+              (buffer-substring (line-beginning-position) (line-end-position)))
+        (kill-whole-line)
+        (setq next-line
+              (buffer-substring (line-beginning-position) (line-end-position)))
+        (kill-whole-line)
+        (setq prefix (fill-common-string-prefix current-line next-line))
+        (insert
+         (concat current-line " " (substring next-line (length prefix)) "\n")))))
+)
 
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
