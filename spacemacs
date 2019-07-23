@@ -346,9 +346,9 @@ It should only modify the values of Spacemacs settings."
    ;; Maximum number of rollback slots to keep in the cache. (default 5)
    dotspacemacs-max-rollback-slots 5
 
-   ;; If non-nil, the paste transient-state is enabled. While enabled, pressing
-   ;; `p' several times cycles through the elements in the `kill-ring'.
-   ;; (default nil)
+   ;; If non-nil, the paste transient-state is enabled. While enabled, after you
+   ;; paste something, pressing `C-j' and `C-k' several times cycles through the
+   ;; elements in the `kill-ring'. (default nil)
    dotspacemacs-enable-paste-transient-state nil
 
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
@@ -579,10 +579,6 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
      :background nil
      :foreground ,bg-dark
      :height 1.7))
-
-   (header-line
-    (:background nil :inherit nil)
-    (:background nil :inherit nil))
 
    ;; Org Mode Theming
    (org-document-title
