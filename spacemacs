@@ -91,6 +91,7 @@ This function should only modify configuration layer settings."
      emoji
      command-log
      theming
+     multiple-cursors
 
      ;; Email
      (mu4e :variables
@@ -943,9 +944,6 @@ you should place your code here."
   (turn-on-fci-mode)
 
   (setq powerline-default-separator 'nil)
-
-  ;; Multicursors
-  (global-evil-mc-mode  1)
 
   ;; Tabbar
   ;; (setq tabbar-ruler-global-tabbar t)
