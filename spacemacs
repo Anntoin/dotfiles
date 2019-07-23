@@ -1013,7 +1013,7 @@ you should place your code here."
         mu4e-index-lazy-check t
         mu4e-index-update-in-background t
         mu4e-index-update-error-warning t
-        mu4e-update-interval 240)
+        mu4e-update-interval 600)
 
   ;; Bookmarks
   (require 'mu4e-utils)
@@ -1106,7 +1106,7 @@ you should place your code here."
         smtpmail-smtp-server "ballard.amazon.com"
         smtpmail-stream-type 'starttls
         smtpmail-smtp-service 1587
-        smtpmail-auth-credentials  "~/.authinfo"
+        smtpmail-auth-credentials '(("ballard.amazon.com" 1587 "ANT\\anntoinw" (shell-command-to-string "pass 'Amazon/Corp Password'")))
         send-mail-function 'smtpmail-send-it)
 
 
