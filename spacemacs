@@ -561,10 +561,10 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
     (gray-dark          "#999")
     (gray               "#bbb")
 
-    (sans-font          "Source Sans Pro")
+    (sans-font          "DejaVu Sans")
     (serif-font         "Merriweather")
     (et-font            "EtBembo")
-    (sans-mono-font     "Souce Code Pro")
+    (sans-mono-font     "DejaVu Sans Mono")
     (serif-mono-font    "Verily Serif Mono"))
 
   ;; Theme Settings
