@@ -51,6 +51,7 @@ This function should only modify configuration layer settings."
      (ranger :variables
              ranger-show-preview t)
      ;; Language stuff
+     lsp
      (python :variables python-fill-column 79)
      traad
      ;; lsp
@@ -59,12 +60,19 @@ This function should only modify configuration layer settings."
      html
      yaml
      (markdown :variables markdown-live-preview-engine 'vmd)
-     javascript ;; supports coffeescript too :)
+     (javascript :variables
+                 javascript-import-tool 'import-js
+                 javascript-backend 'tern
+                 javascript-fmt-tool 'prettier)
+     import-js
+     prettier
      react
      emacs-lisp
      chrome
      perl5
      haskell
+     typescript
+     sql
 
      ;; Misc
      (shell :variables
@@ -885,7 +893,15 @@ you should place your code here."
 
   ;; Javascript Options
   (setq-default js2-basic-offset 2
-                js-indent-level 2)
+                js-indent-level 2
+                ;; web-mode
+                css-indent-offset 2
+                js2-indent-switch-body t
+                js-switch-indent-offset 2
+                web-mode-markup-indent-offset 2
+                web-mode-css-indent-offset 2
+                web-mode-code-indent-offset 2
+                web-mode-attr-indent-offset 2)
 
   ;; Auto-close compliation window
   (setq compilation-finish-functions 'compile-autoclose)
