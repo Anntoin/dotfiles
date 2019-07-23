@@ -993,6 +993,23 @@ you should place your code here."
   (setq traad-server-program "~/bin/anaconda3/bin/traad")
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Documentation
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;; Markdown
+
+  ;; Use soft wrapping
+  (add-hook 'markdown-mode-hook
+            (lambda ()
+              "Soft wrapping"
+              (set-fill-column 72)
+              (auto-fill-mode 0)
+              (visual-fill-column-mode)
+              (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+              (visual-line-mode)))
+
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Email
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
