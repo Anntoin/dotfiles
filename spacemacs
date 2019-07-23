@@ -251,15 +251,19 @@ It should only modify the values of Spacemacs settings."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(sanityinc-tomorrow-eighties
                          sanityinc-tomorrow-day
-                         apostate
-                         apostate-dark
-                         apostate-light
+                         apropospriate-dark
+                         apropospriate-light
                          oldlace
                          planet
                          smyx
                          spacegray
-                         stekene-dark
                          tango
+                         poet
+                         underwater
+                         twilight-anti-bright
+                         doom-one-light
+                         doom-spacegrey
+                         doom-city-lights
                          )
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -980,6 +984,59 @@ you should place your code here."
   ;; :background "gray20"
   ;; :height 0.4)
 
+  ;; Hooks
+  ;; (defun add-hooks (hooks fun)
+  ;;  "Add FUN to all the HOOKS."
+  ;;  (dolist (hook hooks)
+  ;;   (add-hook hook fun)))
+
+  ;; (add-hooks '(text-mode-hook
+  ;;              prog-mode-hook
+  ;;              ranger-mode-hook
+  ;;              ibuffer-mode-hook
+  ;;              comint-mode-hook)
+  ;;            (lambda () (setq line-spacing 0.1)))
+
+  ;; (add-hooks '(cfw:calendar-mode-hook
+  ;;              text-mode-hook
+  ;;              org-agenda-mode-hook
+  ;;              slack-mode-hook
+  ;;              ibuffer-mode-hook
+  ;;              magit-status-mode-hook
+  ;;              magit-popup-mode-hook
+  ;;              magit-log-mode-hook
+  ;;              magit-diff-mode-hook
+  ;;              comint-mode-hook
+  ;;              eshell-mode-hook
+  ;;              slime-repl-mode-hook
+  ;;              process-menu-mode-hook
+  ;;              mu4e-view-mode-hook
+  ;;              mu4e-main-mode-hook)
+  ;;            (lambda () (progn
+  ;;                        (setq left-margin-width 2)
+  ;;                        (setq right-margin-width 2)
+  ;;                        (set-window-buffer nil (current-buffer)))))
+
+  ;; (add-hooks '(cfw:calendar-mode-hook
+  ;;              text-mode-hook
+  ;;              org-agenda-mode-hook
+  ;;              slack-mode-hook
+  ;;              ibuffer-mode-hook
+  ;;              magit-status-mode-hook
+  ;;              magit-log-mode-hook
+  ;;              magit-diff-mode-hook
+  ;;              comint-mode-hook
+  ;;              eshell-mode-hook
+  ;;              slime-repl-mode-hook
+  ;;              process-menu-mode-hook
+  ;;              mu4e-view-mode-hook
+  ;;              mu4e-main-mode-hook)
+  ;;            (lambda () (setq header-line-format " ")))
+
+  ;; (add-hooks '(text-mode-hook
+  ;;              cfw:calendar-mode-hook)
+  ;;            (lambda () (spacemacs/disable-hl-line-mode)))
+
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Mode preferences
@@ -1131,6 +1188,8 @@ you should place your code here."
   ;; Org
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  (add-hook 'org-mode-hook (lambda () (electric-indent-local-mode -1)))
+
   (setq org-startup-indented t
         org-bullets-bullet-list '(" ") ;; no bullets, needs org-bullets package
         org-ellipsis "  " ;; folding symbol
@@ -1140,7 +1199,11 @@ you should place your code here."
         org-agenda-block-separator ""
         org-fontify-whole-heading-line t
         org-fontify-done-headline t
-        org-fontify-quote-and-verse-blocks t)
+        org-fontify-quote-and-verse-blocks t
+        org-fontify-emphasized-text t
+        ;; https://github.com/syl20bnr/spacemacs/issues/9692
+        org-adapt-indentation nil)
+
 
   ;; Auto-revert all org mode files
   ((org-mode . ((eval . (auto-revert-mode 1)))))
@@ -1180,7 +1243,7 @@ you should place your code here."
         SCHEDULED: %^t
         %a\n")
       ("n" "work note" entry (file+headline "~/Org/work.org" "Notes")
-       "* NOTE: %?
+       "* NOTE: %? %u
         %^g
         %a\n")
       ("j" "work journal" entry (file+olp+datetree "~/Org/journal.org")
@@ -1191,6 +1254,8 @@ you should place your code here."
        "* NOTE: %?
         %^g
         %a\n")))
+
+  (push (org-projectile-project-todo-entry) org-capture-templates)
 
   (setq org-refile-targets '((nil :maxlevel . 6)
                              (org-agenda-files :maxlevel . 6)))
