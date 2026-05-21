@@ -16,28 +16,15 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
 
-      # Get any host specific configuration
-      # Now just passing the hostname through but can use this later
-      # for more detailed configurations while still keeping purity
-      getHostConfig = hostname: { inherit hostname; };
+      # Per-host configs
+      hosts = import ./hosts.nix;
 
       # Set up home-manager with the given host configuration
       mkHost =
         hostConfig:
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-
-          modules = [
-            ./config/home-manager.nix
-            ./config/shell.nix
-            ./config/editor.nix
-            ./config/terminal.nix
-            ./config/fonts.nix
-            ./config/dev-tools.nix
-            ./config/admin-tools.nix
-            ./config/file-tools.nix
-          ];
-
+          modules = hostConfig.modules;
           extraSpecialArgs = { inherit hostConfig; };
         };
     in
@@ -45,10 +32,10 @@
       # configuration is selected automatically based on your
       # username & hostname, see `man home-manager`
       homeConfigurations = {
-        "anntoin@manuzio" = mkHost (getHostConfig "manuzio");
-        "anntoin@garamond" = mkHost (getHostConfig "garamond");
-        "anntoin@abulafia" = mkHost (getHostConfig "abulafia");
-        "anntoin@pilades" = mkHost (getHostConfig "pilades");
+        "anntoin@manuzio" = mkHost (hosts.getHostConfig "manuzio");
+        "anntoin@garamond" = mkHost (hosts.getHostConfig "garamond");
+        "anntoin@abulafia" = mkHost (hosts.getHostConfig "abulafia");
+        "anntoin@pilades" = mkHost (hosts.getHostConfig "pilades");
       };
     };
 }
