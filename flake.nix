@@ -32,6 +32,7 @@
             ./config/shell.nix
             ./config/editor.nix
             ./config/terminal.nix
+            ./config/fonts.nix
             ./config/dev-tools.nix
             ./config/admin-tools.nix
             ./config/file-tools.nix
