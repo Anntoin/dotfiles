@@ -84,10 +84,16 @@
 
     interactiveShellInit = ''
       fish_vi_key_bindings
+
+      # Atuin and Starship should always be present
       atuin hex init fish | source
       atuin init fish | source
       starship init fish | source
-      devenv hook fish | source
+
+      # Conditionaly load Devenv
+      if command -s devenv
+        devenv hook fish | source
+      end
 
       # Not compatible with home-managers automatic plugin sourcing
       source ~/.config/fish/conf.d/plugin-pisces.fish
