@@ -1,4 +1,9 @@
-{ pkgs, config, hostConfig, ... }:
+{
+  pkgs,
+  config,
+  hostConfig,
+  ...
+}:
 # Core shell environment and tools
 {
 
@@ -91,7 +96,7 @@
       starship init fish | source
 
       # Conditionaly load Devenv
-      if command -s devenv
+      if command -q devenv
         devenv hook fish | source
       end
 
