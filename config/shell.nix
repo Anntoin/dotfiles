@@ -43,12 +43,16 @@
     # ZMX Prefix
     ZMX_SESSION_PREFIX = "${hostConfig.hostname}.";
 
+    # Prefer EDITOR for git
+    GIT_EDITOR = "$EDITOR";
+
     # SSH agent
     SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/rbw/ssh-agent-socket";
   };
 
   home.shellAliases = {
     "ls" = "eza --hyperlink";
+    "info" = "info --vi-keys";
   };
 
   # SSH client configuration
@@ -224,7 +228,7 @@
     source = ./starship;
   };
 
-  # Cat replacemwnt with syntax highlighting:
+  # Cat replacement with syntax highlighting:
   # https://github.com/sharkdp/bat
   programs.bat = {
     enable = true;
