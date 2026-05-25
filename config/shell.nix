@@ -168,6 +168,132 @@
     '';
   };
 
+  # Readline — helix-inspired vi-mode keybindings
+  #
+  # Design notes:
+  #   • Readline only supports single-function bindings per key sequence.
+  #     There is no way to chain "delete then switch to insert mode", so
+  #     change operators (cw, cc, s) delete but stay in command mode.
+  #     Press i/a afterwards to re-enter insert mode.
+  #   • yy kills the line (deletes it) and puts it in the kill ring.
+  #     This is a readline limitation — there is no "copy line without
+  #     killing" function. Paste with p to recover the line.
+  #   • Visual selection uses set-mark. Press v, move, then use Ctrl-W
+  #     or d in command mode to cut the region.
+  #   • Only 2-key sequences are used; 3-key combos (like vdw) are not
+  #     supported because readline can't chain commands.
+  #
+  programs.readline = {
+    enable = true;
+
+    # Global bindings (active in all keymaps)
+    # NOTE: These are in extraConfig rather than the `bindings` attr
+    # because Nix string escaping mangles the readline escape sequences
+    # (\t becomes a literal tab, \e loses its backslash).
+    extraConfig = ''
+      # Global key bindings
+      "\t": menu-complete
+      "\e[Z": menu-complete-backward
+
+      # Cursor shape by mode
+      $if term=linux
+        set vi-ins-mode-string \1\e[?0c\2
+        set vi-cmd-mode-string \1\e[?8c\2
+      $else
+        set vi-ins-mode-string \1\e[6 q\2
+        set vi-cmd-mode-string \1\e[2 q\2
+      $endif
+
+      # Vi-mode specific bindings
+      $if mode=vi
+        # Default to insert mode on new prompts
+        set keymap vi-insert
+
+        # Insert-mode conveniences
+        "\C-w": unix-word-rubout
+        "\C-k": kill-line
+        "\C-u": unix-line-discard
+
+        # Command-mode keymap
+        set keymap vi-command
+
+        # Motions
+        h:         backward-char
+        l:         forward-char
+        j:         next-history
+        k:         previous-history
+        w:         forward-word
+        b:         backward-word
+        e:         forward-word
+        0:         beginning-of-line
+        "\$":      end-of-line
+        G:         end-of-history
+        g:         beginning-of-history
+
+        # Single-char edits
+        x:         delete-char
+        X:         backward-delete-char
+        r:         overwrite-char
+
+        # Delete operators (motion-first, helix-style: select then operate)
+        # NOTE: w/b/e now start 2-key sequences, causing a brief timeout
+        # before the single-key motion fires. keyseq-timeout minimises this
+        # in Bash; other readline programs may feel slower on w/b/e.
+        wd:        kill-word
+        bd:        backward-kill-word
+        dd:        kill-whole-line
+        D:         kill-line
+
+        # Change operators -- delete but stay in command mode
+        # (readline cannot auto-switch to insert after a binding)
+        wc:        kill-word
+        bc:        backward-kill-word
+        cc:        kill-whole-line
+        C:         kill-line
+        s:         delete-char
+
+        # Yank / paste
+        p:         yank
+        yy:        kill-whole-line
+
+        # Visual selection
+        v:         set-mark
+        V:         set-mark
+
+        # Undo
+        u:         undo
+
+        # Search
+        /:         reverse-search-history
+
+        # Accept line
+        "\r":      accept-line
+
+        # Ctrl shortcuts (available in command mode too)
+        "\C-a":    beginning-of-line
+        "\C-e":    end-of-line
+      $endif
+
+      # Fast keyseq timeout for bash
+      $if Bash
+        set keyseq-timeout 1
+      $endif
+    '';
+
+    variables = {
+      editing-mode = "vi";
+      keymap = "vi";
+      completion-ignore-case = "on";
+      show-mode-in-prompt = "on";
+      visible-stats = "on";
+      colored-stats = "on";
+      mark-symlinked-directories = "on";
+      colored-completion-prefix = "on";
+      menu-complete-display-prefix = "on";
+      show-all-if-unmodified = "on";
+    };
+  };
+
   # Nice interactive shell:
   # https://fishshell.com/
   programs.fish = {
