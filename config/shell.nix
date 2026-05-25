@@ -121,6 +121,53 @@
     "d %t/ssh 0700 - - -"
   ];
 
+  # Ol' reliable
+  # Since it's everywhere might as well configure it nicely
+  programs.bash = {
+    enable = true;
+    enableCompletion = true;
+
+    shellOptions = [
+      # Append to history file rather than replacing
+      # We should have atuin available generally so this is just a fallback
+      "histappend"
+      # Check window size after each command
+      "checkwinsize"
+      # Autocorrect minor typos in cd
+      "cdspell"
+      # Extended globbing
+      "extglob"
+      # Enable ** globbing
+      "globstar"
+    ];
+
+    historyControl = [
+      "ignoredups"
+      "erasedups"
+    ];
+
+    historyFileSize = 100000;
+    historySize = 100000;
+
+    initExtra = ''
+      # Conditionally load Devenv
+      if command -v devenv >/dev/null 2>&1; then
+        eval "$(devenv hook bash)"
+      fi
+
+      # Tirith enter mode
+      # Mode (bind -x) doesn't work reliably in bash because bind -x doesn't
+      # trigger PROMPT_COMMAND, so commands get silently swallowed. Use preexec
+      # mode for bash instead; fish is unaffected.
+      # https://github.com/sheeki03/tirith/pull/24
+      TIRITH_BASH_MODE="preexec"
+
+      # Suppress tirith preexec banner
+      # We intentionally use preexec mode; suppress the "warn-only" notice.
+      _TIRITH_PREEXEC_WARNED=1
+    '';
+  };
+
   # Nice interactive shell:
   # https://fishshell.com/
   programs.fish = {
