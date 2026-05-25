@@ -9,6 +9,12 @@
   home.username = "anntoin";
   home.homeDirectory = "/home/anntoin";
 
+  # Enable XDG base directory management
+  # Sets XDG_CONFIG_HOME, XDG_DATA_HOME, XDG_CACHE_HOME, XDG_STATE_HOME,
+  # and XDG_BIN_HOME as session variables so programs and our own configs
+  # can reference them reliably.
+  xdg.enable = true;
+
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
   # Automatically update home-manager
