@@ -2,6 +2,7 @@
 
 format = """
 [ ](bg:red)\
+$shell\
 $os\
 $username\
 [](bg:peach fg:red)\
@@ -24,8 +25,8 @@ $conda\
 [ ](fg:lavender)\
 $fill\
 [](sapphire)\
-${env_var. ZMX_SESSION} \
-$hostname
+${env_var.ZMX_SESSION}\
+${custom.hostname}
 $cmd_duration\
 $line_break\
 $character
@@ -40,10 +41,37 @@ palette = 'catppuccin_frappe'
 [fill]
 symbol = ' '
 
-[hostname]
-ssh_only = false
-style = 'bg:sapphire fg:crust'
-format = '[$ssh_symbol $hostname 󰇅 ]($style)'
+[custom.hostname]
+command = '''
+hostname=$(hostnamectl --static)
+ssh_symbol=""
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+  ssh_symbol="󰣀 "
+fi
+
+case "$hostname" in
+  "manuzio")
+    echo -n "$ssh_symbol$hostname 󱝊"
+    ;;
+  "garamond")
+    echo -n "$ssh_symbol$hostname 󰿠"
+    ;;
+  "pilades")
+    echo -n "$ssh_symbol$hostname 󱅊"
+    ;;
+  "abulafia")
+    echo -n "$ssh_symbol$hostname 󰿺"
+    ;;
+  *)
+    echo -n "$ssh_symbol$hostname 󰒅"
+    ;;
+esac
+'''
+shell = ['bash']
+when = "true"
+description = "Hostname with per-host icon and styling"
+format = '[ $output ]($style)'
+style = "bg:__HOST_COLOR__ fg:crust"
 
 [os]
 disabled = false
@@ -95,6 +123,21 @@ symbol = " "
 format = "[$symbol$env_value]($style) "
 description = "zmx session name"
 style = "bold magenta"
+
+[shell]
+disabled = false
+format = "[$indicator ]($style)"
+style = "bg:red fg:crust"
+bash_indicator = "🐚"
+fish_indicator = "🐟"
+zsh_indicator = "⚡"
+unknown_indicator = "❯"
+powershell_indicator = "ψ"
+ion_indicator = "⚛"
+elvish_indicator = "🧝"
+nu_indicator = "󰎙"
+xonsh_indicator = "🐍"
+cmd_indicator = "󰍲"
 
 [git_branch]
 symbol = ""

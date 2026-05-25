@@ -396,9 +396,27 @@
     enableFishIntegration = true;
     configPath = "${config.xdg.configHome}/starship/starship.toml";
   };
-  xdg.configFile."starship" = {
-    recursive = true;
-    source = ./starship;
+
+  # Generate starship config with hostname-specific styling
+  # Maps each host to a catppuccin-frappe accent color, with sapphire as fallback
+  xdg.configFile."starship/starship.toml" = {
+    text =
+      builtins.replaceStrings
+        [ "__HOST_COLOR__" ]
+        [
+          (
+            {
+              manuzio = "blue";
+              garamond = "green";
+              pilades = "teal";
+              abulafia = "mauve";
+            }
+            // {
+              ${hostConfig.hostname} = "sapphire";
+            }
+          ).${hostConfig.hostname}
+        ]
+        (builtins.readFile ./starship/starship.toml);
   };
 
   # Cat replacement with syntax highlighting:
