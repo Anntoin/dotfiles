@@ -150,6 +150,8 @@
     historySize = 100000;
 
     initExtra = ''
+      ${builtins.readFile ./../scripts/quick-source.sh}
+
       # Conditionally load Devenv
       if command -v devenv >/dev/null 2>&1; then
         eval "$(devenv hook bash)"
@@ -165,6 +167,20 @@
       # Suppress tirith preexec banner
       # We intentionally use preexec mode; suppress the "warn-only" notice.
       _TIRITH_PREEXEC_WARNED=1
+
+      # ── Cached shell integrations ──
+      # bash-preexec must be sourced before atuin
+      if [[ :$SHELLOPTS: =~ :(vi|emacs): ]]; then
+        source "${pkgs.bash-preexec}/share/bash/bash-preexec.sh"
+      fi
+
+      _quick_source atuin atuin init bash
+
+      if [[ $TERM != "dumb" ]]; then
+        _quick_source starship starship init bash --print-full-init
+      fi
+
+      _quick_source zoxide zoxide init bash
     '';
   };
 
@@ -366,7 +382,7 @@
   # https://atuin.sh/
   programs.atuin = {
     enable = true;
-    enableBashIntegration = true;
+    enableBashIntegration = false; # handled by _quick_source in bash initExtra
     enableFishIntegration = true;
     daemon.enable = true;
     settings = {
@@ -392,7 +408,7 @@
   # https://starship.rs/
   programs.starship = {
     enable = true;
-    enableBashIntegration = true;
+    enableBashIntegration = false; # handled by _quick_source in bash initExtra
     enableFishIntegration = true;
     configPath = "${config.xdg.configHome}/starship/starship.toml";
   };
@@ -432,7 +448,7 @@
   # https://github.com/ajeetdsouza/zoxide
   programs.zoxide = {
     enable = true;
-    enableBashIntegration = true;
+    enableBashIntegration = false; # handled by _quick_source in bash initExtra
     enableFishIntegration = true;
   };
 
