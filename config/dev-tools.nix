@@ -42,6 +42,10 @@
     # https://github.com/vitor-mariano/regex-tui
     regex-tui
 
+    # Bash Automated Testing System
+    # https://bats-core.readthedocs.io/en/stable/
+    bats
+
     # Nix stuff
     nil # Language server for Nix
     nixd # Another language server for Nix :p
