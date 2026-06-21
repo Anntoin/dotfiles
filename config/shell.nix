@@ -490,24 +490,8 @@
   };
 
   # Ranger-like file manager:
-  # https://yazi-rs.github.io/
-  programs.yazi = {
+  # https://github.com/gokcehan/lf
+  programs.lf = {
     enable = true;
-    enableBashIntegration = true;
-    enableFishIntegration = true;
-    shellWrapperName = "y";
-
-    plugins = {
-      yatline = pkgs.yaziPlugins.yatline;
-      full-border = pkgs.yaziPlugins.full-border;
-      vcs-files = pkgs.yaziPlugins.vcs-files;
-      ouch = pkgs.yaziPlugins.ouch;
-      duckdb = pkgs.yaziPlugins.duckdb;
-      # nbpreview = "${yazi-plugins}/nbpreview.yazi";
-    };
-  };
-  xdg.configFile."yazi" = {
-    source = ./yazi;
-    recursive = true;
   };
 }
