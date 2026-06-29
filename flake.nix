@@ -8,10 +8,19 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    { nixpkgs, home-manager, ... }:
+    {
+      nixpkgs,
+      home-manager,
+      hermes-agent,
+      ...
+    }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -25,7 +34,10 @@
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           modules = hostConfig.modules;
-          extraSpecialArgs = { inherit hostConfig; };
+          extraSpecialArgs = {
+            inherit hostConfig;
+            hermesPkg = hermes-agent.packages.${system}.default;
+          };
         };
     in
     {

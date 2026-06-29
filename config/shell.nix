@@ -1,7 +1,9 @@
 {
   pkgs,
+  lib,
   config,
   hostConfig,
+  hermesPkg,
   ...
 }:
 # Core shell environment and tools
@@ -19,6 +21,11 @@
     # CLI for bitwarden
     # https://github.com/doy/rbw
     rbw
+
+    # AI agent framework by Nous Research
+    # https://github.com/NousResearch/hermes-agent
+    # Installed via nix flake — includes pre-built TUI (no npm deps needed)
+    hermesPkg
   ];
 
   home.sessionVariables = {
@@ -53,6 +60,45 @@
   home.shellAliases = {
     "ls" = "eza --hyperlink";
     "info" = "info --vi-keys";
+  };
+
+  # ── rbw SSH agent service ──────────────────────────────────────────
+  # rbw-agent provides the SSH agent socket that SSH_AUTH_SOCK points
+  # to. Without this service the agent only starts on-demand when a
+  # `rbw` CLI command is run, which means SSH connections fail (hang or
+  # "agent refused operation") when no rbw command has been invoked
+  # recently — e.g. after a reboot or if the agent died.
+  #
+  # The agent still auto-locks after `lock_timeout` (config: 3600s/1h);
+  # running `rbw unlock` will unlock it again. The service ensures the
+  # *process* and the *socket* are always present, not that the vault is
+  # always unlocked.
+  systemd.user.services.rbw-agent = {
+    Unit = {
+      Description = "rbw Bitwarden agent (SSH agent + password vault)";
+      # default.target is active on both desktop and server hosts (it's the
+      # main user session target). graphical-session.target is inactive on
+      # headless hosts, so we can't rely on it.
+      After = [ "default.target" ];
+    };
+    Service = {
+      # --no-daemonize keeps the process in the foreground so systemd
+      # can track it directly with Type=simple. The agent still writes
+      # its pidfile and takes an exclusive lock on it, so only one
+      # instance can run at a time.
+      Type = "simple";
+      ExecStart = "${pkgs.rbw}/bin/rbw-agent --no-daemonize";
+      Restart = "on-failure";
+      RestartSec = 5;
+      Environment = [
+        "XDG_RUNTIME_DIR=%t"
+        "XDG_CONFIG_HOME=%h/.config"
+        "XDG_DATA_HOME=%h/.local/share"
+      ];
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
   };
 
   # SSH client configuration
@@ -194,23 +240,21 @@
   #   • yy kills the line (deletes it) and puts it in the kill ring.
   #     This is a readline limitation — there is no "copy line without
   #     killing" function. Paste with p to recover the line.
-  #   • Visual selection uses set-mark. Press v, move, then use Ctrl-W
-  #     or d in command mode to cut the region.
+  #   • Visual selection is not possible — readline's active region highlighting
+  #     only works for bracketed paste and incremental search, not for
+  #     continuous mark-to-point selection. set-mark still works for kill-region
+  #     operations (Ctrl-W), just without visual feedback.
   #   • Only 2-key sequences are used; 3-key combos (like vdw) are not
   #     supported because readline can't chain commands.
   #
   programs.readline = {
     enable = true;
+    includeSystemConfig = false;
 
-    # Global bindings (active in all keymaps)
-    # NOTE: These are in extraConfig rather than the `bindings` attr
+    # NOTE: Bindings are in extraConfig rather than the `bindings` attr
     # because Nix string escaping mangles the readline escape sequences
     # (\t becomes a literal tab, \e loses its backslash).
     extraConfig = ''
-      # Global key bindings
-      "\t": menu-complete
-      "\e[Z": menu-complete-backward
-
       # Cursor shape by mode
       $if term=linux
         set vi-ins-mode-string \1\e[?0c\2
@@ -220,15 +264,14 @@
         set vi-cmd-mode-string \1\e[2 q\2
       $endif
 
+      # Active region highlighting
+      set active-region-start-color \e[48;2;81;87;109m
+      set active-region-end-color   \e[49m
+
       # Vi-mode specific bindings
       $if mode=vi
         # Default to insert mode on new prompts
         set keymap vi-insert
-
-        # Insert-mode conveniences
-        "\C-w": unix-word-rubout
-        "\C-k": kill-line
-        "\C-u": unix-line-discard
 
         # Command-mode keymap
         set keymap vi-command
@@ -236,77 +279,48 @@
         # Motions
         h:         backward-char
         l:         forward-char
-        j:         next-history
-        k:         previous-history
+        j:         next-screen-line
+        k:         previous-screen-line
         w:         forward-word
         b:         backward-word
-        e:         forward-word
-        0:         beginning-of-line
-        "\$":      end-of-line
-        G:         end-of-history
-        g:         beginning-of-history
+        f:         character-search
+        F:         character-search-backward
+        Home:      beginning-of-line
+        End:       end-of-line
 
-        # Single-char edits
-        x:         delete-char
-        X:         backward-delete-char
-        r:         overwrite-char
-
-        # Delete operators (motion-first, helix-style: select then operate)
+        # Copy/Paste/Delete
+        # (motion-first, helix-style: select then operate)
         # NOTE: w/b/e now start 2-key sequences, causing a brief timeout
         # before the single-key motion fires. keyseq-timeout minimises this
         # in Bash; other readline programs may feel slower on w/b/e.
-        wd:        kill-word
-        bd:        backward-kill-word
-        dd:        kill-whole-line
-        D:         kill-line
-
-        # Change operators -- delete but stay in command mode
-        # (readline cannot auto-switch to insert after a binding)
-        wc:        kill-word
-        bc:        backward-kill-word
-        cc:        kill-whole-line
-        C:         kill-line
-        s:         delete-char
-
-        # Yank / paste
-        p:         yank
-        yy:        kill-whole-line
-
-        # Visual selection
-        v:         set-mark
-        V:         set-mark
+        d:         delete-char
+        "wd":      kill-word
+        "bd":      backward-kill-word
+        "xd":      kill-whole-line
+        p:         yank # i.e. paste
 
         # Undo
         u:         undo
-
-        # Search
-        /:         reverse-search-history
-
-        # Accept line
-        "\r":      accept-line
-
-        # Ctrl shortcuts (available in command mode too)
-        "\C-a":    beginning-of-line
-        "\C-e":    end-of-line
       $endif
 
-      # Fast keyseq timeout for bash
+      # Keyseq timeout sufficient for 2-key sequences
       $if Bash
-        set keyseq-timeout 1
+        set keyseq-timeout 100
       $endif
     '';
 
     variables = {
       editing-mode = "vi";
-      keymap = "vi";
-      completion-ignore-case = "on";
+      keymap = "vi-insert";
       show-mode-in-prompt = "on";
-      visible-stats = "on";
-      colored-stats = "on";
-      mark-symlinked-directories = "on";
+      completion-ignore-case = "on";
       colored-completion-prefix = "on";
       menu-complete-display-prefix = "on";
       show-all-if-unmodified = "on";
+      visible-stats = "on";
+      colored-stats = "on";
+      mark-symlinked-directories = "on";
+      enable-active-region = "on";
     };
   };
 
@@ -494,4 +508,40 @@
   programs.lf = {
     enable = true;
   };
+
+  # ── Hermes custom skills symlinks ──────────────────────────────────
+  # Links ~/.hermes/skills/<category> → ~/resources/skills/<category>
+  # so that skill edits go directly into the git repo (Anntoin/skills).
+  # The repo must be cloned first: `gh repo clone Anntoin/skills ~/resources/skills`
+  home.activation.linkHermesSkills = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    REPO="$HOME/resources/skills"
+    HERMES_SKILLS="$HOME/.hermes/skills"
+
+    if [ ! -d "$REPO" ]; then
+      verboseEcho "  [hermes-skills] ~/resources/skills not found — run: gh repo clone Anntoin/skills ~/resources/skills"
+      exit 0
+    fi
+
+    for cat in bat development devops home-manager infrastructure personal-knowledge; do
+      src="$REPO/$cat"
+      dst="$HERMES_SKILLS/$cat"
+
+      if [ ! -d "$src" ]; then
+        continue
+      fi
+
+      # Already symlinked correctly
+      if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+        continue
+      fi
+
+      # Remove existing dir or wrong symlink
+      if [ -e "$dst" ] || [ -L "$dst" ]; then
+        run rm -rf "$dst"
+      fi
+
+      run mkdir -p "$HERMES_SKILLS"
+      run ln -s "$src" "$dst"
+    done
+  '';
 }
