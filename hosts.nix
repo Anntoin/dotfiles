@@ -12,6 +12,7 @@ let
     ./config/admin-tools.nix
     ./config/file-tools.nix
     ./config/desktop-tools.nix
+    ./config/clipcat.nix
     ./config/keymapper.nix
   ]
   ++ defaultModules;
