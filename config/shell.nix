@@ -18,10 +18,6 @@
     # https://tldr.sh/
     tldr
 
-    # CLI for bitwarden
-    # https://github.com/doy/rbw
-    rbw
-
     # AI agent framework by Nous Research
     # https://github.com/NousResearch/hermes-agent
     # Installed via nix flake — includes pre-built TUI (no npm deps needed)
@@ -60,6 +56,18 @@
   home.shellAliases = {
     "ls" = "eza --hyperlink";
     "info" = "info --vi-keys";
+  };
+
+  # CLI for bitwarden
+  # https://github.com/doy/rbw
+  programs.rbw = {
+    enable = true;
+    settings = {
+      base_url = "https://secrets.anntoin.com";
+      email = "anntoin@gmail.com";
+      pinentry = pkgs.pinentry-curses;
+      lock_timeout = 4294967295;
+    };
   };
 
   # ── rbw SSH agent service ──────────────────────────────────────────
