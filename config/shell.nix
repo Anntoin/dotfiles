@@ -457,6 +457,18 @@
         (builtins.readFile ./starship/starship.toml);
   };
 
+  #  A simple, fast and user-friendly alternative to 'find'
+  # https://github.com/sharkdp/fd
+  programs.fd = {
+    enable = true;
+  };
+
+  # A modern alternative to ls
+  # https://github.com/eza-community/eza
+  programs.eza = {
+    enable = true;
+  };
+
   # Cat replacement with syntax highlighting:
   # https://github.com/sharkdp/bat
   programs.bat = {
