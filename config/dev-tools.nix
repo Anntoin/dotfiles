@@ -6,10 +6,6 @@
     # https://devenv.sh
     devenv
 
-    # TUI git client which supports staging lines:
-    # https://github.com/jesseduffield/lazygit
-    lazygit
-
     # Open fork of terraform:
     # https://opentofu.org/
     opentofu
@@ -58,6 +54,19 @@
       user.name = "Anntóin Wilkinson";
       user.email = "anntoin@gmail.com";
       alias.lol = "log --graph --decorate --oneline";
+    };
+  };
+
+  # TUI git client which supports staging lines:
+  # https://github.com/jesseduffield/lazygit
+  programs.lazygit = {
+    enable = true;
+  };
+
+  programs.gh = {
+    enable = true;
+    settings = {
+      git_protocol = "ssh";
     };
   };
 }
