@@ -1,8 +1,33 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 # Desktop stuff
 {
   home.packages = with pkgs; [
     fuzzel
+    jq
+  ]
+  ++ [
+    # OpenProject CLI — prebuilt Go binary (flake build broken: Go version mismatch)
+    # https://github.com/opf/openproject-cli/releases
+    (pkgs.stdenv.mkDerivation rec {
+      pname = "openproject-cli";
+      version = "0.5.5";
+      src = pkgs.fetchzip {
+        url = "https://github.com/opf/openproject-cli/releases/download/v${version}/openproject-cli_linux_amd64_v${version}.zip";
+        sha256 = "wZBoKJNUFtdU8cTz1VLEe2xsGuv3cjgtSywe3982Cm4=";
+        stripRoot = false;
+      };
+      installPhase = ''
+        runHook preInstall
+        install -Dm755 op $out/bin/op
+        runHook postInstall
+      '';
+      meta = with lib; {
+        description = "CLI for the OpenProject APIv3";
+        homepage = "https://github.com/opf/openproject-cli";
+        license = licenses.gpl3Only;
+        platforms = [ "x86_64-linux" ];
+      };
+    })
   ];
 
   programs.tofi = {
@@ -54,5 +79,27 @@
 
   services.wayle = {
     enable = true;
+  };
+
+  xdg.mimeApps = {
+    enable = true;
+    associations.added = {
+      "text/html" = [ "firefox.desktop" ];
+      "x-scheme-handler/http" = [ "firefox.desktop" ];
+      "x-scheme-handler/https" = [ "firefox.desktop" ];
+      "x-scheme-handler/about" = [ "firefox.desktop" ];
+      "x-scheme-handler/unknown" = [ "firefox.desktop" ];
+      "x-scheme-handler/readest" = [ "Readest-handler.desktop" ];
+      "x-scheme-handler/joplin" = [ "joplin.desktop" ];
+    };
+    defaultApplications = {
+      "text/html" = [ "firefox.desktop" ];
+      "x-scheme-handler/http" = [ "firefox.desktop" ];
+      "x-scheme-handler/https" = [ "firefox.desktop" ];
+      "x-scheme-handler/about" = [ "firefox.desktop" ];
+      "x-scheme-handler/unknown" = [ "firefox.desktop" ];
+      "x-scheme-handler/readest" = [ "Readest-handler.desktop" ];
+      "x-scheme-handler/joplin" = [ "joplin.desktop" ];
+    };
   };
 }

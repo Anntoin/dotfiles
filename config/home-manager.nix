@@ -15,6 +15,11 @@
   # can reference them reliably.
   xdg.enable = true;
 
+  # Enable XDG user directories
+  # Creates ~/.config/user-dirs.dirs and the standard directories:
+  # Desktop, Documents, Downloads, Music, Pictures, Videos, Templates, Public
+  xdg.userDirs.enable = true;
+
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
   # Automatically update home-manager
