@@ -111,21 +111,8 @@ in
   # Run with sudo after `home-manager switch` if the reminder prints:
   #   sudo swaylock-install-pam
   home.packages = [
-    (pkgs.writeShellScriptBin "swaylock-install-pam" ''
-      set -euo pipefail
-      PAM_FILE="/etc/pam.d/swaylock"
-
-      cat > "$PAM_FILE" <<EOF
-      #
-      # PAM configuration file for the swaylock screen locker. By default, it includes
-      # the 'login' configuration file (see /etc/pam.d/login)
-      #
-
-      auth include login
-      EOF
-
-      echo "Installed $PAM_FILE"
-    '')
+    (pkgs.writeShellScriptBin "swaylock-install-pam"
+      (builtins.readFile ./scripts/swaylock-install-pam.sh))
   ];
 
   # Reminder: check if the PAM file exists

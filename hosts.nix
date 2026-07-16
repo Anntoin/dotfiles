@@ -1,54 +1,40 @@
 let
-  defaultModules = [
-    ./config/home-manager.nix
-    ./config/shell.nix
-    ./config/fonts.nix
-  ];
-
-  desktopModules = [
-    ./config/editor.nix
-    ./config/terminal.nix
-    ./config/dev-tools.nix
-    ./config/admin-tools.nix
-    ./config/file-tools.nix
-    ./config/desktop-tools.nix
-    ./config/clipcat.nix
-    ./config/keymapper.nix
-    ./config/sway.nix
-    ./config/swayidle.nix
-  ]
-  ++ defaultModules;
-
-  serverModules = [
-    ./config/editor.nix
-    ./config/admin-tools.nix
-    ./config/file-tools.nix
-  ]
-  ++ defaultModules;
-
-  # Host specific configuration
+  # Host-specific extra modules (beyond the topic baseline)
   hostConfig = {
     "manuzio" = {
       hostname = "manuzio";
-      modules = desktopModules ++ [
-        ./config/productivity-tools.nix
-        ./config/sdr-tools.nix
+      topic = "desktop";
+      extraModules = [
+        ./config/packages/productivity-tools.nix
+        ./config/packages/sdr-tools.nix
       ];
     };
     "abulafia" = {
       hostname = "abulafia";
-      modules = desktopModules;
+      topic = "desktop";
+      extraModules = [ ];
     };
     "garamond" = {
       hostname = "garamond";
-      modules = serverModules;
+      topic = "server";
+      extraModules = [ ];
     };
     "pilades" = {
       hostname = "pilades";
-      modules = serverModules;
+      topic = "server";
+      extraModules = [ ];
     };
+  };
+
+  topicModules = {
+    desktop = ./config/topics/desktop.nix;
+    server = ./config/topics/server.nix;
   };
 in
 {
-  getHostConfig = hostname: hostConfig.${hostname};
+  getHostConfig = hostname:
+    let cfg = hostConfig.${hostname};
+    in cfg // {
+      modules = [ topicModules.${cfg.topic} ] ++ cfg.extraModules;
+    };
 }
