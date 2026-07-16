@@ -21,6 +21,10 @@
       cat > "$UNIT_FILE" <<EOF
 [Unit]
 Description=Keymapper Daemon
+# Start as early as possible — the user client (keymapper -u) waits for
+# the @keymapper socket, but the daemon needs time to enumerate input
+# devices and create the virtual keyboard before the client connects.
+After=sysinit.target
 
 [Service]
 ExecStart=$KEYMAPPERD
@@ -63,7 +67,17 @@ EOF
     };
     Service = {
       Type = "simple";
-      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %h/.local/state/keymapper";
+      # Wait for keymapperd's @keymapper abstract socket to be listening
+      # before starting the client. keymapperd starts at multi-user.target
+      # (system scope) but may not be ready when the user session starts
+      # (default.target). The socket appears immediately but the daemon
+      # needs a moment to enumerate input devices and create the virtual
+      # keyboard. This check ensures we don't connect before the daemon
+      # is ready, avoiding a silent race where keybindings don't activate.
+      ExecStartPre = [
+        "${pkgs.coreutils}/bin/mkdir -p %h/.local/state/keymapper"
+        "${pkgs.bash}/bin/bash -c 'for i in $(seq 1 30); do ss -x 2>/dev/null | grep -q @keymapper && exit 0; sleep 0.5; done; echo \"keymapperd socket not found after 15s\"; exit 1'"
+      ];
       ExecStart = "${pkgs.keymapper}/bin/keymapper -u";
       # The config executes shell commands (kitty, tofi, swaymsg, brightnessctl,
       # ddcutil, etc.) via $(...). The systemd user manager only has
