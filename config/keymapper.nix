@@ -67,15 +67,13 @@ EOF
     };
     Service = {
       Type = "simple";
-      # Wait for keymapperd's @keymapper abstract socket to be listening
-      # before starting the client. keymapperd starts at multi-user.target
-      # (system scope) but may not be ready when the user session starts
-      # (default.target). The socket appears immediately but the daemon
-      # needs a moment to enumerate input devices and create the virtual
-      # keyboard. This check ensures we don't connect before the daemon
-      # is ready, avoiding a silent race where keybindings don't activate.
       ExecStartPre = [
         "${pkgs.coreutils}/bin/mkdir -p %h/.local/state/keymapper"
+        # Wait for keymapperd's @keymapper socket to be listening.
+        # The daemon starts at system scope (multi-user.target) and creates
+        # the abstract socket immediately, but input devices may still be
+        # enumerating at boot (USB keyboards, mice). We wait for the socket
+        # to ensure the daemon is at least accepting connections.
         "${pkgs.bash}/bin/bash -c 'for i in $(seq 1 30); do grep -q keymapper /proc/net/unix 2>/dev/null && exit 0; sleep 0.5; done; echo \"keymapperd socket not found after 15s\"; exit 1'"
       ];
       ExecStart = "${pkgs.keymapper}/bin/keymapper -u";
@@ -96,6 +94,27 @@ EOF
       KillMode = "process";
       Restart = "on-failure";
       RestartSec = 3;
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
+
+  # One-shot timer that restarts keymapper 10s after user session starts.
+  # At boot, USB input devices enumerate after keymapper's initial
+  # connection to keymapperd. The daemon re-scans devices but the client
+  # doesn't re-send config — keybindings silently fail. This timer forces
+  # a single restart after devices have settled, establishing a clean
+  # re-handshake. Harmless on `home-manager switch` (just restarts once).
+  systemd.user.timers.keymapper-boot-restart = {
+    Unit = {
+      Description = "Restart keymapper after boot device enumeration settles";
+    };
+    Timer = {
+      OnBootSec = "10s";
+      OnUnitActiveSec = "0";
+      AccuracySec = "2s";
+      Unit = "keymapper.service";
     };
     Install = {
       WantedBy = [ "default.target" ];
