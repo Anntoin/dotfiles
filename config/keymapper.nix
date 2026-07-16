@@ -76,7 +76,7 @@ EOF
       # is ready, avoiding a silent race where keybindings don't activate.
       ExecStartPre = [
         "${pkgs.coreutils}/bin/mkdir -p %h/.local/state/keymapper"
-        "${pkgs.bash}/bin/bash -c 'for i in $(seq 1 30); do ss -x 2>/dev/null | grep -q @keymapper && exit 0; sleep 0.5; done; echo \"keymapperd socket not found after 15s\"; exit 1'"
+        "${pkgs.bash}/bin/bash -c 'for i in $(seq 1 30); do grep -q keymapper /proc/net/unix 2>/dev/null && exit 0; sleep 0.5; done; echo \"keymapperd socket not found after 15s\"; exit 1'"
       ];
       ExecStart = "${pkgs.keymapper}/bin/keymapper -u";
       # The config executes shell commands (kitty, tofi, swaymsg, brightnessctl,
