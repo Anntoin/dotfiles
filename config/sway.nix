@@ -15,6 +15,29 @@
 # (without the /usr/bin/ prefix) so PATH resolves to the HM-managed binary.
 # That's a manual system-level edit (greetd is root-owned, outside HM on Arch).
 { pkgs, lib, ... }:
+let
+  # inactive-windows-transparency.py from sway-contrib.
+  # Not packaged in nixpkgs, so we wrap it as a simple derivation
+  # with its only dependency: python3-i3ipc.
+  inactive-windows-transparency = let
+    pythonEnv = pkgs.python3.withPackages (p: [ p.i3ipc ]);
+  in pkgs.stdenv.mkDerivation {
+    pname = "inactive-windows-transparency";
+    version = "unstable-2024-01-01";
+    src = pkgs.fetchurl {
+      url = "https://raw.githubusercontent.com/OctopusET/sway-contrib/master/inactive-windows-transparency.py";
+      hash = "sha256-IOuSkQa+W4/+DeKNdhDCD7v++8/5WAGGsEeFOL4YH0o=";
+    };
+    dontUnpack = true;
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 $src $out/bin/inactive-windows-transparency.py
+      # Replace the shebang with our nix python env
+      sed -i '1s|.*|#!${pythonEnv}/bin/python|' $out/bin/inactive-windows-transparency.py
+      runHook postInstall
+    '';
+  };
+in
 {
   wayland.windowManager.sway = {
     enable = true;
@@ -42,7 +65,7 @@
       # exec wl-paste -n --watch wl-copy
       # keymapper is managed by Home Manager (systemd user service)
       # swayidle is managed by Home Manager (systemd user service)
-      exec /usr/share/sway-contrib/inactive-windows-transparency.py -o 0.55 -g
+      exec ${inactive-windows-transparency}/bin/inactive-windows-transparency.py -o 0.55 -g
 
       ### Window handling
       # Annoyingly wayland doesn't have a window_role equivalent so dialogs need to be specified explicitly
@@ -66,13 +89,12 @@
   };
 
   # ── swaylock ────────────────────────────────────────────────────────
-  # PAM note: the nix swaylock package does NOT install /etc/pam.d/swaylock,
-  # which is required for unlocking. On Arch, this file is shipped by the
-  # pacman package. Before removing pacman's swaylock, copy the PAM file:
-  #   sudo cp /etc/pam.d/swaylock /etc/pam.d/swaylock.bak
-  #   # ... after pacman -R swaylock ...
-  #   sudo cp /etc/pam.d/swaylock.bak /etc/pam.d/swaylock
-  # The file just does `auth include login` so it's stable across versions.
+  # The nix swaylock package does NOT install /etc/pam.d/swaylock, which is
+  # required for unlocking. On Arch, this file is shipped by the pacman
+  # package. We provide a sudo script to install it (same pattern as
+  # keymapper-install-systemd in config/keymapper.nix).
+  #
+  # The PAM file is trivially stable: `auth include login`.
   programs.swaylock = {
     enable = true;
     settings = {
@@ -84,4 +106,36 @@
       show-failed-attempts = true;
     };
   };
+
+  # Script to install/repair the PAM file for swaylock.
+  # Run with sudo after `home-manager switch` if the reminder prints:
+  #   sudo swaylock-install-pam
+  home.packages = [
+    (pkgs.writeShellScriptBin "swaylock-install-pam" ''
+      set -euo pipefail
+      PAM_FILE="/etc/pam.d/swaylock"
+
+      cat > "$PAM_FILE" <<EOF
+      #
+      # PAM configuration file for the swaylock screen locker. By default, it includes
+      # the 'login' configuration file (see /etc/pam.d/login)
+      #
+
+      auth include login
+      EOF
+
+      echo "Installed $PAM_FILE"
+    '')
+  ];
+
+  # Reminder: check if the PAM file exists
+  home.activation.checkSwaylockPam = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [ ! -f /etc/pam.d/swaylock ]; then
+      echo ""
+      echo "  ⚠ swaylock: PAM file missing at /etc/pam.d/swaylock."
+      echo "    Run: sudo swaylock-install-pam"
+      echo "    (installs /etc/pam.d/swaylock with 'auth include login')"
+      echo ""
+    fi
+  '';
 }
