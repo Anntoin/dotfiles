@@ -14,6 +14,8 @@ let
     ./config/desktop-tools.nix
     ./config/clipcat.nix
     ./config/keymapper.nix
+    ./config/sway.nix
+    ./config/swayidle.nix
   ]
   ++ defaultModules;
 
