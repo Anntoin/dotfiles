@@ -100,21 +100,32 @@ EOF
     };
   };
 
-  # One-shot timer that restarts keymapper 10s after user session starts.
-  # At boot, USB input devices enumerate after keymapper's initial
-  # connection to keymapperd. The daemon re-scans devices but the client
-  # doesn't re-send config — keybindings silently fail. This timer forces
-  # a single restart after devices have settled, establishing a clean
-  # re-handshake. Harmless on `home-manager switch` (just restarts once).
-  systemd.user.timers.keymapper-boot-restart = {
+  # One-shot service that restarts keymapper after boot to force a clean
+  # re-handshake with keymapperd. At boot, USB input devices enumerate after
+  # keymapper's initial connection, causing keymapperd to re-scan devices
+  # but the client doesn't re-send config — keybindings silently fail.
+  # A systemd timer (OnBootSec) triggers this service, which restarts
+  # keymapper.service. We can't just use a timer with Unit=keymapper.service
+  # because that does a "start" (no-op if already running), not a "restart".
+  systemd.user.services.keymapper-boot-restart = {
     Unit = {
       Description = "Restart keymapper after boot device enumeration settles";
+      After = [ "keymapper.service" ];
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash -c 'sleep 10; systemctl --user restart keymapper.service'";
+    };
+  };
+
+  systemd.user.timers.keymapper-boot-restart = {
+    Unit = {
+      Description = "Trigger keymapper boot restart after devices settle";
     };
     Timer = {
       OnBootSec = "10s";
-      OnUnitActiveSec = "0";
       AccuracySec = "2s";
-      Unit = "keymapper.service";
+      Unit = "keymapper-boot-restart.service";
     };
     Install = {
       WantedBy = [ "default.target" ];
