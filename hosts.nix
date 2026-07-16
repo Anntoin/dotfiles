@@ -1,40 +1,40 @@
 let
-  # Host-specific extra modules (beyond the topic baseline)
+  # Host-specific extra modules (beyond the profile baseline)
   hostConfig = {
     "manuzio" = {
       hostname = "manuzio";
-      topic = "desktop";
+      profile = "desktop";
       extraModules = [
-        ./config/packages/productivity-tools.nix
-        ./config/packages/sdr-tools.nix
+        ./config/productivity/default.nix
+        ./config/sdr/default.nix
       ];
     };
     "abulafia" = {
       hostname = "abulafia";
-      topic = "desktop";
+      profile = "desktop";
       extraModules = [ ];
     };
     "garamond" = {
       hostname = "garamond";
-      topic = "server";
+      profile = "server";
       extraModules = [ ];
     };
     "pilades" = {
       hostname = "pilades";
-      topic = "server";
+      profile = "server";
       extraModules = [ ];
     };
   };
 
-  topicModules = {
-    desktop = ./config/topics/desktop.nix;
-    server = ./config/topics/server.nix;
+  profileModules = {
+    desktop = ./config/profiles/desktop.nix;
+    server = ./config/profiles/server.nix;
   };
 in
 {
   getHostConfig = hostname:
     let cfg = hostConfig.${hostname};
     in cfg // {
-      modules = [ topicModules.${cfg.topic} ] ++ cfg.extraModules;
+      modules = [ profileModules.${cfg.profile} ] ++ cfg.extraModules;
     };
 }
