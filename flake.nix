@@ -12,18 +12,29 @@
       url = "github:NousResearch/hermes-agent";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Temporary: keymapper PR fork for testing 5.6.0
+    # Remove after PR is merged and nixos-unstable picks it up
+    nixpkgs-keymapper.url = "github:Anntoin/nixpkgs/update-keymapper";
   };
 
   outputs =
     {
       nixpkgs,
+      nixpkgs-keymapper,
       home-manager,
       hermes-agent,
       ...
     }:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [
+          (final: prev: {
+            keymapper = nixpkgs-keymapper.legacyPackages.${system}.keymapper;
+          })
+        ];
+      };
 
       # Per-host configs
       hosts = import ./hosts.nix;

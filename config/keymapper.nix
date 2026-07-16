@@ -1,8 +1,46 @@
-{ pkgs, config, ... }:
+{ pkgs, config, lib, ... }:
 # Keymapper — context-aware key remapper
-# Binary: AUR keymapper-git (5.5.0), system daemon stays as keymapperd.service
-# This module manages the config and the user client service.
+# Binary: keymapper 5.6.0 from nixpkgs
+# This module manages the config, the user client service, and provides
+# a script to install the system-level keymapperd daemon unit.
 {
+  home.packages = with pkgs; [
+    keymapper
+    # Script to install/update the system-level keymapperd.service unit.
+    # Run with sudo after `home-manager switch` if the reminder prints:
+    #   sudo keymapper-install-systemd
+    (writeShellScriptBin "keymapper-install-systemd" ''
+      set -euo pipefail
+      UNIT_DIR="/etc/systemd/system"
+      UNIT_FILE="$UNIT_DIR/keymapperd.service"
+      KEYMAPPERD="${pkgs.keymapper}/bin/keymapperd"
+
+      # Generate the system unit with the absolute nix-store path.
+      # The upstream unit uses a bare "ExecStart=keymapperd" which relies on
+      # the binary being on the system PATH — not the case for nix installs.
+      cat > "$UNIT_FILE" <<EOF
+[Unit]
+Description=Keymapper Daemon
+
+[Service]
+ExecStart=$KEYMAPPERD
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+      systemctl daemon-reload
+
+      if systemctl is-active --quiet keymapperd; then
+        systemctl restart keymapperd
+        echo "keymapperd.service updated and restarted."
+      else
+        systemctl enable --now keymapperd
+        echo "keymapperd.service installed and enabled."
+      fi
+    '')
+  ];
+
   xdg.configFile = {
     "keymapper.conf" = {
       source = ./keymapper/keymapper.conf;
@@ -26,7 +64,7 @@
     Service = {
       Type = "simple";
       ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %h/.local/state/keymapper";
-      ExecStart = "/usr/bin/keymapper -u";
+      ExecStart = "${pkgs.keymapper}/bin/keymapper -u";
       # The config executes shell commands (kitty, tofi, swaymsg, brightnessctl,
       # ddcutil, etc.) via $(...). The systemd user manager only has
       # /usr/local/bin:/usr/bin on PATH — nix-profile and ~/.local/bin are
@@ -49,4 +87,28 @@
       WantedBy = [ "default.target" ];
     };
   };
+
+  # Reminder: check if the system-level keymapperd.service needs updating
+  # after home-manager switch. The daemon runs as a system service because
+  # it needs raw input device access (evdev/uinput).
+  home.activation.checkKeymapperdSystemd = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    KEYMAPPERD_BIN="${pkgs.keymapper}/bin/keymapperd"
+    UNIT_FILE="/etc/systemd/system/keymapperd.service"
+    NEEDS_UPDATE=false
+
+    if [ ! -f "$UNIT_FILE" ]; then
+      NEEDS_UPDATE=true
+    elif ! grep -q "$KEYMAPPERD_BIN" "$UNIT_FILE" 2>/dev/null; then
+      NEEDS_UPDATE=true
+    fi
+
+    if [ "$NEEDS_UPDATE" = true ]; then
+      echo ""
+      echo "  ⚠ keymapperd: system service needs updating."
+      echo "    Run: sudo keymapper-install-systemd"
+      echo "    (installs/updates /etc/systemd/system/keymapperd.service"
+      echo "     to use $KEYMAPPERD_BIN)"
+      echo ""
+    fi
+  '';
 }
