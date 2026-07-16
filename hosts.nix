@@ -1,40 +1,49 @@
 let
-  # Host-specific extra modules (beyond the profile baseline)
+  # Base modules shared by all hosts
+  baseModules = [
+    ./config/home-manager.nix
+    ./config/shell/default.nix
+    ./config/fonts/default.nix
+  ];
+
+  # Desktop baseline — common to all desktop hosts
+  desktopModules = baseModules ++ [
+    ./config/editor/default.nix
+    ./config/desktop/default.nix
+    ./config/dev/default.nix
+    ./config/admin/default.nix
+    ./config/files/default.nix
+  ];
+
+  # Server baseline — common to all server hosts
+  serverModules = baseModules ++ [
+    ./config/editor/default.nix
+    ./config/admin/default.nix
+    ./config/files/default.nix
+  ];
+
   hostConfig = {
     "manuzio" = {
       hostname = "manuzio";
-      profile = "desktop";
-      extraModules = [
+      modules = desktopModules ++ [
         ./config/productivity/default.nix
         ./config/sdr/default.nix
       ];
     };
     "abulafia" = {
       hostname = "abulafia";
-      profile = "desktop";
-      extraModules = [ ];
+      modules = desktopModules;
     };
     "garamond" = {
       hostname = "garamond";
-      profile = "server";
-      extraModules = [ ];
+      modules = serverModules;
     };
     "pilades" = {
       hostname = "pilades";
-      profile = "server";
-      extraModules = [ ];
+      modules = serverModules;
     };
-  };
-
-  profileModules = {
-    desktop = ./config/profiles/desktop.nix;
-    server = ./config/profiles/server.nix;
   };
 in
 {
-  getHostConfig = hostname:
-    let cfg = hostConfig.${hostname};
-    in cfg // {
-      modules = [ profileModules.${cfg.profile} ] ++ cfg.extraModules;
-    };
+  getHostConfig = hostname: hostConfig.${hostname};
 }
