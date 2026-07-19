@@ -63,6 +63,11 @@
     SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/rbw/ssh-agent-socket";
   };
 
+  # Extra directories on PATH for user-installed scripts
+  home.sessionPath = [
+    "$HOME/.local/bin"
+  ];
+
   home.shellAliases = {
     "ls" = "eza --hyperlink";
     "info" = "info --vi-keys";
