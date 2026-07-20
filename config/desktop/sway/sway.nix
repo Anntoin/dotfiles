@@ -115,13 +115,17 @@ in
       (builtins.readFile ./scripts/swaylock-install-pam.sh))
   ];
 
-  # Reminder: check if the PAM file exists
+  # Reminder: check if the PAM file and unix_chkpwd wrapper exist.
+  # Both are system-level files that nix swaylock needs on Arch:
+  #   - /etc/pam.d/swaylock — PAM service config
+  #   - /run/wrappers/bin/unix_chkpwd — symlink to Arch's setuid helper,
+  #     so nix's pam_unix.so can read /etc/shadow (persisted via tmpfiles.d)
   home.activation.checkSwaylockPam = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    if [ ! -f /etc/pam.d/swaylock ]; then
+    if [ ! -f /etc/pam.d/swaylock ] || [ ! -L /run/wrappers/bin/unix_chkpwd ]; then
       echo ""
-      echo "  ⚠ swaylock: PAM file missing at /etc/pam.d/swaylock."
+      echo "  ⚠ swaylock: PAM setup incomplete."
       echo "    Run: sudo swaylock-install-pam"
-      echo "    (installs /etc/pam.d/swaylock with 'auth include login')"
+      echo "    (installs /etc/pam.d/swaylock + unix_chkpwd wrapper + tmpfiles.d snippet)"
       echo ""
     fi
   '';
