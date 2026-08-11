@@ -103,27 +103,6 @@
     };
   };
 
-  # Reminder: check if the system-level keymapperd.service needs updating
-  # after home-manager switch. The daemon runs as a system service because
-  # it needs raw input device access (evdev/uinput).
-  home.activation.checkKeymapperdSystemd = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    KEYMAPPERD_BIN="${pkgs.keymapper}/bin/keymapperd"
-    UNIT_FILE="/etc/systemd/system/keymapperd.service"
-    NEEDS_UPDATE=false
-
-    if [ ! -f "$UNIT_FILE" ]; then
-      NEEDS_UPDATE=true
-    elif ! grep -q "$KEYMAPPERD_BIN" "$UNIT_FILE" 2>/dev/null; then
-      NEEDS_UPDATE=true
-    fi
-
-    if [ "$NEEDS_UPDATE" = true ]; then
-      echo ""
-      echo "  ⚠ keymapperd: system service needs updating."
-      echo "    Run: sudo keymapper-install-systemd"
-      echo "    (installs/updates /etc/systemd/system/keymapperd.service"
-      echo "     to use $KEYMAPPERD_BIN)"
-      echo ""
-    fi
-  '';
+  # System integration check moved to config/desktop/default.nix
+  # (combined with swaylock PAM check as checkSystemIntegration).
 }
