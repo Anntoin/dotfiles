@@ -47,7 +47,7 @@
           modules = hostConfig.modules;
           extraSpecialArgs = {
             inherit hostConfig;
-            hermesPkg = hermes-agent.packages.${system}.default;
+            hermesPkg = hermes-agent.packages.${system}.minimal;
           };
         };
     in
