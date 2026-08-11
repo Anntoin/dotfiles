@@ -69,7 +69,7 @@
   ];
 
   home.shellAliases = {
-    "ls" = "eza --hyperlink";
+    "ls" = "eza";
     "info" = "info --vi-keys";
   };
 }
