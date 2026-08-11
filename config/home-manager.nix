@@ -18,7 +18,13 @@
   # Enable XDG user directories
   # Creates ~/.config/user-dirs.dirs and the standard directories:
   # Desktop, Documents, Downloads, Music, Pictures, Videos, Templates, Public
-  xdg.userDirs.enable = true;
+  xdg.userDirs = {
+    enable = true;
+    # Export XDG_DESKTOP_DIR, XDG_DOCUMENTS_DIR, etc. as session variables
+    # so programs that read env vars (rather than user-dirs.dirs) resolve
+    # to the right paths.
+    setSessionVariables = true;
+  };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
