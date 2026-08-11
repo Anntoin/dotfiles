@@ -7,7 +7,7 @@
     settings = {
       base_url = "https://secrets.anntoin.com";
       email = "anntoin@gmail.com";
-      pinentry = pkgs.pinentry-curses;
+      pinentry = pkgs.pinentry-tty;
       lock_timeout = 4294967295;
     };
   };
