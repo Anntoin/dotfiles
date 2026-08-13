@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 # Developer tools
 {
   home.packages = with pkgs; [
@@ -126,4 +126,60 @@
       ];
     };
   };
+
+  # ── Container registry configuration ──────────────────────────────
+  # Managed by Home Manager — do not edit ~/.config/containers/ directly.
+  #
+  # Policy: reject by default, explicit per-registry allowlist.
+  # Mirrors: cache.anntoin.com (Zot) pass-through caching for the
+  #   upstream registries below. cache.anntoin.com is also used directly
+  #   for pushing private images (donetick, etc).
+  #
+  # Local transports (containers-storage, dir, oci, docker-archive) are
+  # allowed with insecureAcceptAnything — these are filesystem-local,
+  # no network involved, and Buildah needs them for internal operations.
+  xdg.configFile."containers/policy.json".text = builtins.toJSON {
+    default = [{ type = "reject"; }];
+    transports = {
+      docker = {
+        # Upstream registries (via mirror or direct)
+        "docker.io" = [{ type = "insecureAcceptAnything"; }];
+        "cache.anntoin.com/docker.io" = [{ type = "insecureAcceptAnything"; }];
+        "ghcr.io" = [{ type = "insecureAcceptAnything"; }];
+        "cache.anntoin.com/ghcr.io" = [{ type = "insecureAcceptAnything"; }];
+        "registry.gitlab.com" = [{ type = "insecureAcceptAnything"; }];
+        "cache.anntoin.com/registry.gitlab.com" = [{ type = "insecureAcceptAnything"; }];
+        # Private registry
+        "cache.anntoin.com" = [{ type = "insecureAcceptAnything"; }];
+      };
+      # Local-only transports — no network, needed by Buildah
+      "containers-storage" = [{ type = "insecureAcceptAnything"; }];
+      "dir" = [{ type = "insecureAcceptAnything"; }];
+      "oci" = [{ type = "insecureAcceptAnything"; }];
+      "docker-archive" = [{ type = "insecureAcceptAnything"; }];
+    };
+  };
+
+  xdg.configFile."containers/registries.conf".text = ''
+    unqualified-search-registries = ["docker.io"]
+
+    [[registry]]
+    location = "docker.io"
+    mirror = [{ location = "cache.anntoin.com/docker.io" }]
+
+    [[registry]]
+    location = "ghcr.io"
+    mirror = [{ location = "cache.anntoin.com/ghcr.io" }]
+
+    [[registry]]
+    location = "registry.gitlab.com"
+    mirror = [{ location = "cache.anntoin.com/registry.gitlab.com" }]
+  '';
+
+  xdg.configFile."containers/storage.conf".text = ''
+    [storage]
+    driver = "vfs"
+    runroot = "${config.home.homeDirectory}/.local/run/containers/storage"
+    graphroot = "${config.home.homeDirectory}/.local/share/containers/storage"
+  '';
 }
