@@ -32,6 +32,10 @@
     # https://github.com/NousResearch/hermes-agent
     # Installed via nix flake — includes pre-built TUI (no npm deps needed)
     hermesPkg
+
+    # Session persistence for terminal processes
+    # https://github.com/neurosnap/zmx
+    zmx
   ];
 
   home.sessionVariables = {
