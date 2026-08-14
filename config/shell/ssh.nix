@@ -1,6 +1,28 @@
-{ ... }:
+{ pkgs, config, ... }:
 # SSH client configuration
 # https://linux.die.net/man/5/ssh_config
+let
+  # ── sshd environment PATH ──────────────────────────────────────
+  # ~/.ssh/environment is parsed as literal KEY=VAL — no shell
+  # expansion — so $HOME in sessionPath entries must be substituted
+  # to the real path.  Only stable (non-nix-store) paths are used;
+  # ~/.nix-profile/bin and /nix/var/nix/profiles/default/bin are
+  # symlinks that survive rebuilds.
+  sshEnvPaths =
+    let
+      sessionPaths = map (p: builtins.replaceStrings ["$HOME"] [config.home.homeDirectory] p)
+        config.home.sessionPath;
+      stablePaths = [
+        "${config.home.homeDirectory}/.nix-profile/bin"
+        "/nix/var/nix/profiles/default/bin"
+        "/usr/local/sbin"
+        "/usr/local/bin"
+        "/usr/bin"
+      ];
+    in
+    sessionPaths ++ stablePaths;
+  sshEnvPath = builtins.concatStringsSep ":" sshEnvPaths;
+in
 {
   programs.ssh = {
     enable = true;
@@ -65,4 +87,13 @@
   systemd.user.tmpfiles.rules = [
     "d %t/ssh 0700 - - -"
   ];
+
+  # ── sshd environment file ──────────────────────────────────────
+  # Provides PATH to non-interactive RemoteCommand invocations
+  # (e.g. `zmx attach %k` from Termux) which otherwise get sshd's
+  # bare default PATH with no nix or user-local directories.
+  # Built from config.home.sessionPath + stable nix/system paths.
+  home.file.".ssh/environment".text = ''
+    PATH=${sshEnvPath}
+  '';
 }
