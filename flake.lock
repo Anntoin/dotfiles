@@ -84,16 +84,16 @@
     },
     "nixpkgs-keymapper": {
       "locked": {
-        "lastModified": 1786371461,
-        "narHash": "sha256-P1ll8oymbyLv+b+ip3sYU3Ks7/fxTNW4RBGg9rex6t8=",
-        "owner": "Anntoin",
+        "lastModified": 1787406844,
+        "narHash": "sha256-h0rE90bi94m+LsewX4mzmeUTHZHHtJnCyjfJhhWyKqg=",
+        "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "7f1de4e6d4901bcd60a567aca4c2d29e2d3257ae",
+        "rev": "929a59a620edf38e6151a47df59d5544cc079eb5",
         "type": "github"
       },
       "original": {
-        "owner": "Anntoin",
-        "ref": "update-keymapper",
+        "owner": "NixOS",
+        "ref": "refs/pull/555405/head",
         "repo": "nixpkgs",
         "type": "github"
       }

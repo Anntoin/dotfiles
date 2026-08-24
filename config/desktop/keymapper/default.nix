@@ -1,6 +1,5 @@
 { pkgs, config, lib, ... }:
 # Keymapper — context-aware key remapper
-# Binary: keymapper 5.6.0 from nixpkgs
 # This module manages the config, the user client service, and provides
 # a script to install the system-level keymapperd daemon unit.
 {

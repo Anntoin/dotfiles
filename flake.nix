@@ -12,9 +12,8 @@
       url = "github:NousResearch/hermes-agent";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Temporary: keymapper PR fork for testing 5.6.0
-    # Remove after PR is merged and nixos-unstable picks it up
-    nixpkgs-keymapper.url = "github:Anntoin/nixpkgs/update-keymapper";
+    # Override keymapper for testing
+    nixpkgs-keymapper.url = "github:NixOS/nixpkgs/refs/pull/555405/head";
   };
 
   outputs =
