@@ -84,16 +84,16 @@
     },
     "nixpkgs-keymapper": {
       "locked": {
-        "lastModified": 1787406844,
-        "narHash": "sha256-h0rE90bi94m+LsewX4mzmeUTHZHHtJnCyjfJhhWyKqg=",
+        "lastModified": 1787602375,
+        "narHash": "sha256-Yf7jB/2/UTFnXQEIqv+7DBZfAqJKMgCTy7gbxoK+5HM=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "929a59a620edf38e6151a47df59d5544cc079eb5",
+        "rev": "46ca85c04db71d5e2baa2f50872e0c0c07a05e71",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "refs/pull/555405/head",
+        "ref": "refs/pull/556187/head",
         "repo": "nixpkgs",
         "type": "github"
       }
