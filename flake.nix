@@ -13,7 +13,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Override keymapper for testing
-    nixpkgs-keymapper.url = "github:NixOS/nixpkgs/refs/pull/556187/head";
+    nixpkgs-keymapper.url = "github:NixOS/nixpkgs/refs/pull/558742/head";
   };
 
   outputs =
